@@ -96,6 +96,25 @@ def resample(
     raw.resample(sfreq, npad='auto')
 
 
+def interpolate_nans(raw):
+    """Interpolate nans and return mask.
+    """
+    X = raw.get_data()
+    t = raw.times
+    mask = np.isnan(X)
+
+    for i in range(X.shape[0]):
+        if np.any(~mask[:, i]):
+            nan_interp_vals = np.interp(t[mask[i, :]],
+                                        t[np.invert(mask[i, :])],
+                                        X[i, np.invert(mask[i, :])])
+            X[i, mask[i, :]] = nan_interp_vals
+
+    raw._data = X
+    return raw, mask
+
+
+
 @failsafe_run(on_error=on_error, script_path=__file__)
 def filter_data(
     *,
@@ -141,6 +160,8 @@ def filter_data(
     raw_fname_out = bids_path.copy().update(processing='filt')
 
     raw.load_data()
+    if cfg.interpolate_nans:
+        raw, _ = interpolate_nans(raw)
     filter(
         raw=raw, subject=subject, session=session, run=run,
         h_freq=cfg.h_freq, l_freq=cfg.l_freq,
@@ -213,6 +234,7 @@ def get_config(
         space=config.space,
         bids_root=config.get_bids_root(),
         deriv_root=config.get_deriv_root(),
+        interpolate_nans=config.interpolate_nans,
         l_freq=config.l_freq,
         h_freq=config.h_freq,
         l_trans_bandwidth=config.l_trans_bandwidth,

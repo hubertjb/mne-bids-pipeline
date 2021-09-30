@@ -2648,6 +2648,10 @@ def _crop_data(cfg, raw, subject):
     Modifies ``raw`` in-place.
     """
     if subject != 'emptyroom' and cfg.crop_runs is not None:
+        if cfg.crop_runs[1] > raw.times[-1]:
+            crop_runs = (cfg.crop_runs[0], raw.times[-1])
+        else:
+            crop_runs = cfg.crop_runs
         raw.crop(*crop_runs)
 
 
