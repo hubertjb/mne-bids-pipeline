@@ -86,7 +86,8 @@ def run_epochs(*, cfg, subject, session=None):
             metadata_keep_first=cfg.epochs_metadata_keep_first,
             metadata_keep_last=cfg.epochs_metadata_keep_last,
             event_repeated=cfg.event_repeated,
-            decim=cfg.decim
+            decim=cfg.decim,
+            chunk_duration=cfg.chunk_duration
         )
         if config.conditions:
             epochs = epochs[config.conditions]
@@ -135,6 +136,7 @@ def get_config(
         interactive=config.interactive,
         epochs_tmin=config.epochs_tmin,
         epochs_tmax=config.epochs_tmax,
+        chunk_duration=config.chunk_duration,
         epochs_metadata_tmin=config.epochs_metadata_tmin,
         epochs_metadata_tmax=config.epochs_metadata_tmax,
         epochs_metadata_keep_first=config.epochs_metadata_keep_first,

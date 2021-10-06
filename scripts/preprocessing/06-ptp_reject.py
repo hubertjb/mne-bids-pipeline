@@ -82,8 +82,9 @@ def drop_ptp(*, cfg, subject, session=None):
         logger.warning(**gen_log_kwargs(message=msg, subject=subject,
                                         session=session))
     elif n_epochs_after_reject == 0:
-        raise RuntimeError('No epochs remaining after peak-to-peak-based '
-                           'rejection. Cannot continue.')
+        return None
+        # raise RuntimeError('No epochs remaining after peak-to-peak-based '
+        #                    'rejection. Cannot continue.')
 
     msg = 'Saving cleaned, baseline-corrected epochs …'
 

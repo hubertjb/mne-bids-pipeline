@@ -114,7 +114,6 @@ def interpolate_nans(raw):
     return raw, mask
 
 
-
 @failsafe_run(on_error=on_error, script_path=__file__)
 def filter_data(
     *,

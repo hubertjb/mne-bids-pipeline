@@ -2399,7 +2399,8 @@ def make_epochs(
     metadata_keep_first: Optional[Iterable[str]] = None,
     metadata_keep_last: Optional[Iterable[str]] = None,
     event_repeated: Literal['error', 'drop', 'merge'],
-    decim: int
+    decim: int,
+    chunk_duration: Optional[float] = None
 ) -> mne.Epochs:
     """Generate Epochs from raw data.
 
@@ -2419,7 +2420,8 @@ def make_epochs(
             stop=stop)
         event_id = dict(rest=3000)
     else:  # Events for task runs
-        events, event_id_from_annotations = mne.events_from_annotations(raw)
+        events, event_id_from_annotations = mne.events_from_annotations(
+            raw, chunk_duration=chunk_duration)
 
     if event_id is None:
         event_id = event_id_from_annotations
@@ -2625,7 +2627,11 @@ def _load_data(cfg, bids_path):
     # - sets raw.annotations using the BIDS events.tsv
 
     subject = bids_path.subject
-    raw = read_raw_bids(bids_path=bids_path)
+    try:
+        raw = read_raw_bids(bids_path=bids_path)
+    except TypeError as e:
+        print(f'\n\nFailed to load {bids_path}!!!\n\n')
+        raise e
 
     # Save only the channel types we wish to analyze (including the
     # channels marked as "bad").
